@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arisan Toko Noank</title>
+    <link rel="stylesheet" href="./output.css" />
+  </head>
+  <body class="bg-gray-100 p-5">
+    <div
+      class="max-w-2xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden"
+    >
+      <div class="bg-indigo-600 p-6 text-white text-center">
+        <h1 class="text-2xl font-bold">📒 Catatan Arisan Bulanan</h1>
+        <p class="text-sm opacity-80">Target Iuran: Rp 500.000 / orang</p>
+      </div>
+
+      <div class="p-4">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-gray-500 border-b">
+              <th class="py-3 px-2">Nama Tetangga</th>
+              <th class="py-3 px-2 text-right">Terbayar</th>
+              <th class="py-3 px-2 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelArisan"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        update,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+      // 1. MASUKKAN CONFIG FIREBASE KAMU DI SINI
+      const firebaseConfig = {
+        apiKey: "AIzaSyBkVzen-wEg8ziqsDYhtY3JsxsjFPlls2M",
+        databaseURL: "https://arisan-toko-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "arisan-toko",
+        appId: "1:6599577855:web:3a2620f67c27e414bbfcca",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      // 2. HARDCODE NAMA ANGGOTA DI SINI
+      const daftarAnggota = [
+        "Bu Tejo",
+        "Pak RT",
+        "Mbak Pur",
+        "Mas Bro",
+        "Ibu Hajah",
+      ];
+      const TARGET = 500000;
+
+      // Fungsi Update Bayar
+      window.bayar = function (nama, saatIni) {
+        const input = prompt(`Masukkan jumlah setoran untuk ${nama}:`);
+        if (input !== null && input !== "") {
+          const nominal = parseInt(input);
+          const totalBaru = saatIni + nominal;
+
+          if (totalBaru > TARGET) {
+            alert("Waduh, jumlahnya melebihi target Rp 500.000!");
+            return;
+          }
+
+          update(ref(db, "pembayaran/" + nama), { total: totalBaru });
+        }
+      };
+
+      // Render Data
+      onValue(ref(db, "pembayaran"), (snapshot) => {
+        const data = snapshot.val() || {};
+        const tbody = document.getElementById("tabelArisan");
+        tbody.innerHTML = "";
+
+        daftarAnggota.forEach((nama) => {
+          const terbayar = data[nama] ? data[nama].total : 0;
+          const sisa = TARGET - terbayar;
+          const isLunas = sisa === 0;
+
+          tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-4 px-2">
+                            <div class="font-bold">${nama}</div>
+                            <div class="text-xs ${isLunas ? "text-green-600" : "text-red-400"}">
+                                ${isLunas ? "Lunas" : "Sisa: Rp " + sisa.toLocaleString()}
+                            </div>
+                        </td>
+                        <td class="py-4 px-2 text-right font-mono text-blue-700">
+                            Rp ${terbayar.toLocaleString()}
+                        </td>
+                        <td class="py-4 px-2 text-center">
+                            ${
+                              isLunas
+                                ? '<span class="text-2xl">✅</span>'
+                                : `<button onclick="bayar('${nama}', ${terbayar})" class="bg-indigo-500 text-white px-3 py-1 rounded-full text-xs hover:bg-indigo-700">Bayar</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+        });
+      });
+    </script>
+  </body>
+</html>
