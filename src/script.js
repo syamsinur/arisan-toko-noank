@@ -18,7 +18,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // 2. DATA ANGGOTA (Hardcoded)
-const daftarAnggota = ["Bu Tejo", "Pak RT", "Mbak Pur", "Mas Bro", "Ibu Hajah"];
+const daftarAnggota = ["Aisyah", "Aisyah", "Aisyah", "Eva", "Evi", "Aliyah", "Dila Oyong", "Lilis Pasar", "Majid", "Margono", "Naura", "Ayu", "Ila", "Luluk", "Juhey", "Sela", "Wakik", "H Amin", "Noank", "Nayla"];
 const TARGET = 500000;
 
 // 3. FUNGSI-FUNGSI AKSI
