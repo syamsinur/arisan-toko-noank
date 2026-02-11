@@ -61,13 +61,16 @@ onValue(ref(db, "pembayaran"), (snapshot) => {
   const tbody = document.getElementById("tabelArisan");
   tbody.innerHTML = "";
 
-  daftarAnggota.forEach((nama) => {
+  daftarAnggota.forEach((nama, index) => {
     const user = data[nama] || { total: 0, sudahMenang: false };
     const sisa = TARGET - user.total;
     const isLunas = sisa <= 0;
 
     tbody.innerHTML += `
             <tr class="border-b ${user.sudahMenang ? "bg-green-50" : ""}">
+                <td class="py-4 px-2 font-mono text-sm text-center">
+                    ${index + 1}
+                </td>
                 <td class="py-4 px-2">
                     <div class="font-bold ${user.sudahMenang ? "text-green-700" : ""}">
                         ${nama} ${user.sudahMenang ? "🏆" : ""}
