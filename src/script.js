@@ -92,3 +92,12 @@ onValue(ref(db, "pembayaran"), (snapshot) => {
         `;
   });
 });
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('../sw.js')
+      .then(() => console.log("PWA Aktif!"))
+      .catch((err) => console.log("PWA Gagal", err));
+  });
+}
