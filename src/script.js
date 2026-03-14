@@ -30,13 +30,13 @@ function pay(name, currentTotal) {
         const newTotal = currentTotal + nominal;
 
         if(newTotal > target) return alert("nominal melebihi target!");
-        update(ref(db, "payment/" + name), { total: newTotal });
+        update(ref(db, "pembayaran/" + name), { total: newTotal });
     }
 };
 
 function markWin(name, statusWin) {
     if(confirm(`Update status menang ${name}?`)) {
-        update(ref(db, "payment/" + name), { statusWin: !statusWin });
+        update(ref(db, "pembayaran/" + name), { sudahMenang: !statusWin });
     }
 };
 
@@ -50,7 +50,7 @@ const bResetAll = document.getElementById("btn-reset-all");
 bResetMonth.addEventListener('click', function() {
     if(confirm("Reset Bulan?")) {
         users.forEach((name) => {
-            update(ref(db, "payment/" + name), { total: 0 })
+            update(ref(db, "pembayaran/" + name), { total: 0 })
         });
     }
 });
@@ -58,29 +58,29 @@ bResetMonth.addEventListener('click', function() {
 bResetAll.addEventListener('click', function() {
     if(confirm("⚠️ PERINGATAN: Hapus semua data?")) {
         users.forEach((name) => {
-            update(ref(db, "payment/" + name), { total: 0, statusWin: false })
+            update(ref(db, "pembayaran/" + name), { total: 0, sudahMenang: false })
         });
     }
 });
 
 // render (realtime)
-onValue(ref(db, "payment"), (snapshot) => {
+onValue(ref(db, "pembayaran"), (snapshot) => {
     const data = snapshot.val() || {};
     const tbody = document.getElementById("table-user");
     tbody.innerHTML = "";
 
     users.forEach((name, index) => {
-        const user = data[name] || { total: 0, statusWin: false };
+        const user = data[name] || { total: 0, sudahMenang: false };
         const remaining = target - user.total;
         const paidOff = remaining <= 0;
 
         tbody.innerHTML += `
-            <tr class="${user.statusWin ? "bg-green-50" : "odd:bg-neutral-primary even:bg-neutral-secondary-soft"} lg:text-base border-b border-default">
+            <tr class="${user.sudahMenang ? "bg-green-50" : "odd:bg-neutral-primary even:bg-neutral-secondary-soft"} lg:text-base border-b border-default">
                 <td class="px-6 py-4 text-center font-medium">
                     ${index + 1}
                 </td>
                 <td class="px-6 py-4 text-center">
-                    <div class="${user.statusWin ? "text-green-700" : ""} text-base font-medium">
+                    <div class="${user.sudahMenang ? "text-green-700" : ""} text-base font-medium">
                         ${name}
                     </div>
                     <div class="text-xs ${paidOff ? "text-green-600" : "text-red-400"} font-medium">
@@ -92,9 +92,9 @@ onValue(ref(db, "payment"), (snapshot) => {
                 </td>
                 <td class="px-6 py-4 text-center">
                     <button onclick="pay('${name}', ${user.total})" class="px-2 py-1 text-xs font-medium text-white bg-blue-500 rounded-xs hover:underline hover:text-inherit hover:bg-white border lg:text-base">Pay</button>
-                    <span class="hidden sm:inline-flex ${user.statusWin ? "hidden" : ""}"> | </span>
-                    <button onclick="markWin('${name}', ${user.statusWin})" class="${user.statusWin ? "hidden" : ""} px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-xs hover:underline hover:text-inherit hover:bg-white border lg:text-base">Win</button>
-                    <span class="text-lg lg:text-2xl">${user.statusWin ? "🏆" : ""}</span>
+                    <span class="hidden sm:inline-flex ${user.sudahMenang ? "hidden" : ""}"> | </span>
+                    <button onclick="markWin('${name}', ${user.sudahMenang})" class="${user.sudahMenang ? "hidden" : ""} px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-xs hover:underline hover:text-inherit hover:bg-white border lg:text-base">Win</button>
+                    <span class="text-lg lg:text-2xl">${user.sudahMenang ? "🏆" : ""}</span>
                 </td>
             </tr>
         `;
