@@ -8,10 +8,10 @@ import {
 
 // config firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBl8JvlW7ogHyTUfesUIppV06SOxdKfAFU",
-    databaseURL: "https://arisan-project-cdd36-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "arisan-project-cdd36",
-    appId: "1:582708258054:web:a32d2ceca13015dde6ea87",
+    apiKey: "AIzaSyBkVzen-wEg8ziqsDYhtY3JsxsjFPlls2M",
+    databaseURL: "https://arisan-toko-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "arisan-toko",
+    appId: "1:6599577855:web:3a2620f67c27e414bbfcca",
 };
 
 // initialize firebase
