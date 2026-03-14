@@ -1,52 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#1d4ed8">
-    <title>Arisan Toko Noank</title>
-    <link rel="stylesheet" href="./output.css" />
-  </head>
-  <body class="bg-slate-100 p-4">
-    <div
-      class="max-w-2xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden mt-10"
-    >
-      <div class="bg-indigo-600 p-6 text-white text-center">
-        <h1 class="text-2xl font-bold">📒 Catatan Arisan Bulanan</h1>
-        <p class="text-sm opacity-80">Target Iuran: Rp 500.000 / orang</p>
-      </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>arisan</title>
+    <link rel="stylesheet" href="./output.css">
+</head>
+<body class="p-3"> 
+    <div class="container">
+        <h1 class="mb-1 pt-3 text-3xl font-bold text-heading md:text-5xl lg:text-6xl"><span class="text-transparent bg-clip-text bg-linear-to-r to-emerald-600 from-sky-400">Buku Arisan</span> Toko Noank</h1>
+        <p class="text-sm font-normal text-gray-500 lg:text-xl">Target iuran: Rp. 500.000 / orang</p>
 
-      <div class="p-6">
-        <div class="flex gap-2 mb-6 justify-center">
-          <button
-            id="btnResetBulan"
-            class="bg-orange-500 text-white text-xs px-3 py-2 rounded-lg hover:bg-orange-600 transition"
-          >
-            🔄 Reset Bulan Baru
-          </button>
-          <button
-            id="btnResetTotal"
-            class="bg-red-600 text-white text-xs px-3 py-2 rounded-lg hover:bg-red-700 transition"
-          >
-            ⚠️ Reset Semua Data
-          </button>
+        <div class="pt-5 inline-flex rounded-base shadow-xs -space-x-px" role="group">
+            <button  id="btn-reset-month" type="button" class="text-body bg-neutral-primary-soft border border-default hover:bg-neutral-secondary-medium hover:text-heading focus:ring-3 focus:ring-neutral-tertiary-soft font-medium leading-5 rounded-s-base text-sm px-3 py-2 focus:outline-none lg:text-base">
+                🔄 Reset Bulan Baru
+            </button>
+            <button  id="btn-reset-all" type="button" class="text-body bg-neutral-primary-soft border border-default hover:bg-neutral-secondary-medium hover:text-heading focus:ring-3 focus:ring-neutral-tertiary-soft font-medium leading-5 text-sm px-3 py-2 focus:outline-none lg:text-base">
+                ⚠️ Reset Semua Data
+            </button>
         </div>
 
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="text-gray-500 border-b">
-              <th class="py-3 px-2 text-center text-sm uppercase">No</th>
-              <th class="py-3 px-2 text-sm uppercase">Nama</th>
-              <th class="py-3 px-2 text-right text-sm uppercase">Terbayar</th>
-              <th class="py-3 px-2 text-center text-sm uppercase">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tabelArisan"></tbody>
-        </table>
-      </div>
+        <div class="mt-10 relative bg-neutral-primary-soft shadow-xs rounded-base border border-default">
+            <table class="table-auto w-full text-sm text-left rtl:text-right text-body">
+                <thead class="bg-neutral-secondary-soft border-b border-default">
+                    <tr class="lg:text-base">
+                        <th class="px-6 py-3 font-medium text-center">
+                            No
+                        </th>
+                        <th class="px-6 py-3 font-medium text-center">
+                            Name
+                        </th>
+                        <th class="px-6 py-3 font-medium text-center">
+                            Paid
+                        </th>
+                        <th class="px-6 py-3 font-medium text-center">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="table-user">
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script type="module" src="script.js"></script>
-  </body>
+<script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+<script type="module" src="./script.js"></script>
+</body>
 </html>

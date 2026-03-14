@@ -6,91 +6,99 @@ import {
   update,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 1. CONFIG FIREBASE
+// config firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBkVzen-wEg8ziqsDYhtY3JsxsjFPlls2M",
-  databaseURL: "https://arisan-toko-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "arisan-toko",
-  appId: "1:6599577855:web:3a2620f67c27e414bbfcca",
+    apiKey: "AIzaSyBl8JvlW7ogHyTUfesUIppV06SOxdKfAFU",
+    databaseURL: "https://arisan-project-cdd36-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "arisan-project-cdd36",
+    appId: "1:582708258054:web:a32d2ceca13015dde6ea87",
 };
 
+// initialize firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 2. DATA ANGGOTA (Hardcoded)
-const daftarAnggota = ["Aisyah 1", "Aisyah 2", "Aisyah 3", "Eva", "Evi", "Aliyah", "Dila Oyong", "Lilis Pasar", "Majid", "Margono", "Naura", "Ayu", "Ila", "Luluk", "Juhey", "Sela", "Wakik", "H Amin", "Noank", "Nayla"];
-const TARGET = 500000;
+// data user
+const users = ["Aisyah 1", "Aisyah 2", "Aisyah 3", "Eva", "Evi", "Aliyah", "Dila Oyong", "Lilis Pasar", "Majid", "Margono", "Naura", "Ayu", "Ila", "Luluk", "Juhey", "Sela", "Wakik", "H Amin", "Noank", "Nayla"];
+const target = 500000;
 
-// 3. FUNGSI-FUNGSI AKSI
-window.bayar = (nama, saatIni) => {
-  const input = prompt(`Masukkan setoran untuk ${nama}:`);
-  if (input) {
-    const nominal = parseInt(input);
-    const totalBaru = saatIni + nominal;
-    if (totalBaru > TARGET) return alert("Kelebihan iuran!");
-    update(ref(db, "pembayaran/" + nama), { total: totalBaru });
-  }
+// utility
+function pay(name, currentTotal) {
+    const input = prompt(`Masukkan jumlah setoran untuk ${name}:`);
+    if(input) {
+        const nominal = parseInt(input);
+        const newTotal = currentTotal + nominal;
+
+        if(newTotal > target) return alert("nominal melebihi target!");
+        update(ref(db, "payment/" + name), { total: newTotal });
+    }
 };
 
-window.tandaiMenang = (nama, statusSekarang) => {
-  if (confirm(`Update status menang ${nama}?`)) {
-    update(ref(db, "pembayaran/" + nama), { sudahMenang: !statusSekarang });
-  }
+function markWin(name, statusWin) {
+    if(confirm(`Update status menang ${name}?`)) {
+        update(ref(db, "payment/" + name), { statusWin: !statusWin });
+    }
 };
 
-// 4. LOGIKA TOMBOL RESET (Pakai Event Listener agar rapi)
-document.getElementById("btnResetBulan").onclick = () => {
-  if (confirm("Reset cicilan semua orang jadi Rp 0?")) {
-    daftarAnggota.forEach((nama) =>
-      update(ref(db, "pembayaran/" + nama), { total: 0 }),
-    );
-  }
-};
+window.pay = pay;
+window.markWin = markWin;
 
-document.getElementById("btnResetTotal").onclick = () => {
-  if (confirm("⚠️ PERINGATAN: Hapus semua data termasuk riwayat menang?")) {
-    daftarAnggota.forEach((nama) =>
-      update(ref(db, "pembayaran/" + nama), { total: 0, sudahMenang: false }),
-    );
-  }
-};
+// controller
+const bResetMonth = document.getElementById("btn-reset-month");
+const bResetAll = document.getElementById("btn-reset-all");
 
-// 5. RENDER REALTIME
-onValue(ref(db, "pembayaran"), (snapshot) => {
-  const data = snapshot.val() || {};
-  const tbody = document.getElementById("tabelArisan");
-  tbody.innerHTML = "";
+bResetMonth.addEventListener('click', function() {
+    if(confirm("Reset Bulan?")) {
+        users.forEach((name) => {
+            update(ref(db, "payment/" + name), { total: 0 })
+        });
+    }
+});
 
-  daftarAnggota.forEach((nama, index) => {
-    const user = data[nama] || { total: 0, sudahMenang: false };
-    const sisa = TARGET - user.total;
-    const isLunas = sisa <= 0;
+bResetAll.addEventListener('click', function() {
+    if(confirm("⚠️ PERINGATAN: Hapus semua data?")) {
+        users.forEach((name) => {
+            update(ref(db, "payment/" + name), { total: 0, statusWin: false })
+        });
+    }
+});
 
-    tbody.innerHTML += `
-            <tr class="border-b ${user.sudahMenang ? "bg-green-50" : ""}">
-                <td class="py-4 px-2 font-mono text-sm text-center">
+// render (realtime)
+onValue(ref(db, "payment"), (snapshot) => {
+    const data = snapshot.val() || {};
+    const tbody = document.getElementById("table-user");
+    tbody.innerHTML = "";
+
+    users.forEach((name, index) => {
+        const user = data[name] || { total: 0, statusWin: false };
+        const remaining = target - user.total;
+        const paidOff = remaining <= 0;
+
+        tbody.innerHTML += `
+            <tr class="${user.statusWin ? "bg-green-50" : "odd:bg-neutral-primary even:bg-neutral-secondary-soft"} lg:text-base border-b border-default">
+                <td class="px-6 py-4 text-center font-medium">
                     ${index + 1}
                 </td>
-                <td class="py-4 px-2">
-                    <div class="font-bold ${user.sudahMenang ? "text-green-700" : ""}">
-                        ${nama} ${user.sudahMenang ? "🏆" : ""}
+                <td class="px-6 py-4 text-center">
+                    <div class="${user.statusWin ? "text-green-700" : ""} text-base font-medium">
+                        ${name}
                     </div>
-                    <div class="text-[10px] ${isLunas ? "text-green-600" : "text-red-400"} font-bold">
-                        ${isLunas ? "LUNAS" : "SISA: Rp " + sisa.toLocaleString()}
+                    <div class="text-xs ${paidOff ? "text-green-600" : "text-red-400"} font-medium">
+                        ${paidOff ? "LUNAS" : "SISA: Rp " + remaining.toLocaleString()}
                     </div>
                 </td>
-                <td class="py-4 px-2 text-right font-mono text-sm">
+                <td class="px-6 py-4 text-center">
                     Rp ${user.total.toLocaleString()}
                 </td>
-                <td class="py-4 px-2 text-center flex justify-center gap-1">
-                    ${!isLunas ? `<button onclick="bayar('${nama}', ${user.total})" class="bg-blue-600 text-white p-1 px-2 rounded text-[10px]">BAYAR</button>` : "✅"}
-                    <button onclick="tandaiMenang('${nama}', ${user.sudahMenang})" class="bg-gray-200 text-gray-700 p-1 px-2 rounded text-[10px] hover:bg-yellow-400 transition">
-                        WIN
-                    </button>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="pay('${name}', ${user.total})" class="px-2 py-1 text-xs font-medium text-white bg-blue-500 rounded-xs hover:underline hover:text-inherit hover:bg-white border lg:text-base">Pay</button>
+                    <span class="hidden sm:inline-flex ${user.statusWin ? "hidden" : ""}"> | </span>
+                    <button onclick="markWin('${name}', ${user.statusWin})" class="${user.statusWin ? "hidden" : ""} px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-xs hover:underline hover:text-inherit hover:bg-white border lg:text-base">Win</button>
+                    <span class="text-lg lg:text-2xl">${user.statusWin ? "🏆" : ""}</span>
                 </td>
             </tr>
         `;
-  });
+    });
 });
 
 // Register Service Worker
